@@ -10,6 +10,7 @@ const colorMap = ['Dark', 'Default', 'Light', 'Medium', 'Medium-Dark', 'Medium-L
 
 const metadata = {
   categories: {
+    'Smileys & Emotion': [],
     'People & Body': [],
     'Animals & Nature': [],
     'Food & Drink': [],
@@ -18,7 +19,6 @@ const metadata = {
     'Objects': [],
     'Activities': [],
     'Flags': [],
-    'Smileys & Emotion': [],
   }
 }
 async function resolveDir(path: string) {
