@@ -17,9 +17,9 @@ async function resolveDir(path: string) {
       if (fileName.includes('.svg')) {
         if (path.includes('Flat')) {
           if (!colorMap.some(color => path.includes(color))) {
-            await copy(join(path, fileName), join(targetDirPath, dirname(path).split(dirPath)[1], 'Default', fileName))
+            await copy(join(path, fileName), join(targetDirPath, dirname(path).split(dirPath)[1], 'Default', 'emoji.svg'))
           } else {
-            await copy(join(path, fileName), join(targetDirPath, dirname(path).split(dirPath)[1], fileName))
+            await copy(join(path, fileName), join(targetDirPath, dirname(path).split(dirPath)[1], 'emoji.svg'))
           }
         }
       }
