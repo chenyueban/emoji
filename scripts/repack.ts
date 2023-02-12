@@ -1,4 +1,4 @@
-import { readdir, stat, copy, readJSON, writeJSON } from 'fs-extra'
+import { readdir, stat, copyFile, readJSON, writeJSON } from 'fs-extra'
 import { join, dirname } from 'node:path'
 import { cwd } from 'node:process'
 import { kebabCase } from 'lodash'
@@ -32,20 +32,20 @@ async function resolveDir(path: string) {
         if (path.includes('Flat')) {
           if (!colorMap.some(color => path.includes(color))) {
             const name = kebabCase(dirname(path).split(dirPath)[1])
-            await copy(join(path, fileName), join(targetDirPath, name, 'default', 'emoji.svg'))
+            await copyFile(join(path, fileName), join(targetDirPath, name, 'default', 'emoji.svg'))
           } else {
             const name = kebabCase(dirname(path).split(dirPath)[1].split('/')[1])
             const color = dirname(path).split('/').at(-1)
-            await copy(join(path, fileName), join(targetDirPath, name, color.toLowerCase(), 'emoji.svg'))
+            await copyFile(join(path, fileName), join(targetDirPath, name, color.toLowerCase(), 'emoji.svg'))
           }
         }
       }
       if (fileName.includes('.json')) {
         const name = kebabCase(path.split(dirPath)[1])
-        await copy(join(path, fileName), join(targetDirPath, name, fileName))
+        await copyFile(join(path, fileName), join(targetDirPath, name, fileName))
         const json = await readJSON(join(path, fileName))
         if (Array.isArray(metadata.categories[json.group])) {
-          metadata.categories[json.group].push(kebabCase(json.cldr))
+          metadata.categories[json.group].push(name)
         }
       }
     }
@@ -54,7 +54,7 @@ async function resolveDir(path: string) {
 
 async function main() {
   await resolveDir(dirPath)
-  await writeJSON(join(targetDirPath, 'metadata.json'), metadata)
+  await writeJSON(join(targetDirPath, 'metadata.json'), metadata, { spaces: 2 })
 }
 
 main()
