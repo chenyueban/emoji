@@ -1,6 +1,7 @@
 import { readdir, stat, copy } from 'fs-extra'
 import { join, dirname } from 'node:path'
 import { cwd } from 'node:process'
+import { kebabCase } from 'lodash'
 
 const dirPath = join(cwd(), 'assets')
 const targetDirPath = join(cwd(), 'emoji')
@@ -16,18 +17,26 @@ async function resolveDir(path: string) {
     else {
       if (fileName.includes('.svg')) {
         if (path.includes('Flat')) {
+          const name = kebabCase(dirname(path).split(dirPath)[1])
           if (!colorMap.some(color => path.includes(color))) {
-            await copy(join(path, fileName), join(targetDirPath, dirname(path).split(dirPath)[1], 'Default', 'emoji.svg'))
+            await copy(join(path, fileName), join(targetDirPath, name, 'default', 'emoji.svg'))
           } else {
-            await copy(join(path, fileName), join(targetDirPath, dirname(path).split(dirPath)[1], 'emoji.svg'))
+            await copy(join(path, fileName), join(targetDirPath, name, 'emoji.svg'))
           }
         }
       }
       if (fileName.includes('.json')) {
-        await copy(join(path, fileName), join(targetDirPath, path.split(dirPath)[1], fileName))
+        const name = kebabCase(path.split(dirPath)[1])
+        await copy(join(path, fileName), join(targetDirPath, name, fileName))
       }
     }
   }
 }
 
-resolveDir(dirPath)
+async function main() {
+  await resolveDir(dirPath)
+  // 单独复制 metadata.json
+  await copy(join(cwd(), 'metadata.json'), join(targetDirPath, 'metadata.json'))
+}
+
+main()
