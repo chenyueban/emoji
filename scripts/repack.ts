@@ -17,11 +17,13 @@ async function resolveDir(path: string) {
     else {
       if (fileName.includes('.svg')) {
         if (path.includes('Flat')) {
-          const name = kebabCase(dirname(path).split(dirPath)[1])
           if (!colorMap.some(color => path.includes(color))) {
+            const name = kebabCase(dirname(path).split(dirPath)[1])
             await copy(join(path, fileName), join(targetDirPath, name, 'default', 'emoji.svg'))
           } else {
-            await copy(join(path, fileName), join(targetDirPath, name, 'emoji.svg'))
+            const name = kebabCase(dirname(path).split(dirPath)[1].split('/')[1])
+            const color = dirname(path).split('/').at(-1)
+            await copy(join(path, fileName), join(targetDirPath, name, color.toLowerCase(), 'emoji.svg'))
           }
         }
       }
