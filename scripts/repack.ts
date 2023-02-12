@@ -1,4 +1,4 @@
-import { readdir, stat, copy } from 'fs-extra'
+import { readdir, stat, copy, readJSON, writeJSON } from 'fs-extra'
 import { join, dirname } from 'node:path'
 import { cwd } from 'node:process'
 import { kebabCase } from 'lodash'
@@ -8,6 +8,19 @@ const targetDirPath = join(cwd(), 'emoji')
 
 const colorMap = ['Dark', 'Default', 'Light', 'Medium', 'Medium-Dark', 'Medium-Light']
 
+const metadata = {
+  categories: {
+    'People & Body': [],
+    'Animals & Nature': [],
+    'Food & Drink': [],
+    'Symbols': [],
+    'Travel & Places': [],
+    'Objects': [],
+    'Activities': [],
+    'Flags': [],
+    'Smileys & Emotion': [],
+  }
+}
 async function resolveDir(path: string) {
   for (const fileName of await readdir(path)) {
     const path2 = join(path, fileName)
@@ -30,6 +43,10 @@ async function resolveDir(path: string) {
       if (fileName.includes('.json')) {
         const name = kebabCase(path.split(dirPath)[1])
         await copy(join(path, fileName), join(targetDirPath, name, fileName))
+        const json = await readJSON(join(path, fileName))
+        if (Array.isArray(metadata.categories[json.group])) {
+          metadata.categories[json.group].push(kebabCase(json.cldr))
+        }
       }
     }
   }
@@ -37,8 +54,7 @@ async function resolveDir(path: string) {
 
 async function main() {
   await resolveDir(dirPath)
-  // 单独复制 metadata.json
-  await copy(join(cwd(), 'metadata.json'), join(targetDirPath, 'metadata.json'))
+  await writeJSON(join(targetDirPath, 'metadata.json'), metadata)
 }
 
 main()
