@@ -19,7 +19,8 @@ const metadata = {
     'Objects': [],
     'Activities': [],
     'Flags': [],
-  }
+  },
+  metadata: []
 }
 async function resolveDir(path: string) {
   for (const fileName of await readdir(path)) {
@@ -44,6 +45,7 @@ async function resolveDir(path: string) {
         const name = kebabCase(path.split(dirPath)[1])
         await copyFile(join(path, fileName), join(targetDirPath, name, fileName))
         const json = await readJSON(join(path, fileName))
+        metadata.metadata.push(json)
         if (Array.isArray(metadata.categories[json.group])) {
           metadata.categories[json.group].push(name)
         }
